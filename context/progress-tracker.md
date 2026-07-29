@@ -4,32 +4,38 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Feature 02: TBD
+- Phase 1: Editor Chrome
 
 ## Current Goal
 
-- Define the immediate implementation goal here.
+- Implement base editor chrome components: navbar, project sidebar, and dialog pattern.
 
 ## Completed
 
-- Feature 01: Design System — shadcn/ui installed and configured for Tailwind v4, dark-only theme tokens in globals.css, Button/Card/Dialog/Input/Tabs/Textarea/ScrollArea components added to components/ui/, lucide-react installed, lib/utils.ts cn() helper in place. TypeScript compiles clean.
+- Editor navbar (`components/editor/editor-navbar.tsx`) — fixed-height top navbar with sidebar toggle using `PanelLeftOpen`/`PanelLeftClose` icons.
+- Project sidebar (`components/editor/project-sidebar.tsx`) — floating sidebar that slides from left, with `Projects` header, `My Projects`/`Shared` tabs, empty placeholder states, and full-width `New Project` button.
+- Dialog pattern types (`components/editor/dialog-types.ts`) — `DialogProps` and `DialogAction` interfaces ready for future dialog implementations.
+- Editor layout integration (`app/editor/layout.tsx`) — integrated navbar and sidebar with state management.
+- Editor page (`app/editor/page.tsx`) — workspace canvas placeholder.
+- Home page updated with link to editor.
 
 ## In Progress
 
-- None yet.
+- None.
 
 ## Next Up
 
-- Feature 02 (TBD)
+- Add first functional dialog (e.g., new project dialog)
+- Implement canvas workspace with React Flow
 
 ## Open Questions
 
-- None yet.
+- Add unresolved product or implementation question here. 
 
 ## Architecture Decisions
 
 - shadcn/ui over Tailwind v4 (CSS-based token config via @theme inline in globals.css, no tailwind.config.js).
-- Dark-only theme: all shadcn :root variables set to dark values directly — no .dark class switching.
+- Light-only theme.
 - Do not modify generated components/ui/* files after shadcn installation.
 
 ## Session Notes
