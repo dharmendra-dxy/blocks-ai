@@ -1,22 +1,43 @@
-"use client";
+"use client"
 
-import { FolderOpen, Plus, Users, X } from "lucide-react";
+import { FolderOpen, MoreHorizontal, Plus, Pencil, Trash2, Users, X } from "lucide-react"
 
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
+import type { Project } from "@/types/project"
 
 interface ProjectSidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
+  projects: Project[]
+  onNewProject: () => void
+  onRename: (project: Project) => void
+  onDelete: (project: Project) => void
 }
 
-export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
+export function ProjectSidebar({
+  isOpen,
+  onClose,
+  projects,
+  onNewProject,
+  onRename,
+  onDelete,
+}: ProjectSidebarProps) {
+  const ownedProjects = projects.filter((p) => p.isOwner)
+  const sharedProjects = projects.filter((p) => !p.isOwner)
+
   return (
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/20"
+          className="fixed inset-0 z-40 bg-black/20 md:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -56,38 +77,110 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
             </TabsList>
 
             <TabsContent value="my-projects" className="mt-4">
-              <EmptyState
-                icon={FolderOpen}
-                title="No projects yet"
-                description="Create your first project to get started."
-              />
+              {ownedProjects.length === 0 ? (
+                <EmptyState
+                  icon={FolderOpen}
+                  title="No projects yet"
+                  description="Create your first project to get started."
+                />
+              ) : (
+                <div className="flex flex-col gap-1">
+                  {ownedProjects.map((project) => (
+                    <ProjectItem
+                      key={project.id}
+                      project={project}
+                      onRename={onRename}
+                      onDelete={onDelete}
+                    />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="shared" className="mt-4">
-              <EmptyState
-                icon={Users}
-                title="No shared projects"
-                description="Projects shared with you will appear here."
-              />
+              {sharedProjects.length === 0 ? (
+                <EmptyState
+                  icon={Users}
+                  title="No shared projects"
+                  description="Projects shared with you will appear here."
+                />
+              ) : (
+                <div className="flex flex-col gap-1">
+                  {sharedProjects.map((project) => (
+                    <div
+                      key={project.id}
+                      className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-sidebar-foreground"
+                    >
+                      <FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <span className="truncate">{project.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
 
         <footer className="border-t border-sidebar-border p-4">
-          <Button className="w-full" size="lg">
+          <Button className="w-full" size="lg" onClick={onNewProject}>
             <Plus className="h-4 w-4" />
             New Project
           </Button>
         </footer>
       </aside>
     </>
-  );
+  )
+}
+
+interface ProjectItemProps {
+  project: Project
+  onRename: (project: Project) => void
+  onDelete: (project: Project) => void
+}
+
+function ProjectItem({ project, onRename, onDelete }: ProjectItemProps) {
+  return (
+    <div className="group flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-sidebar-accent">
+      <FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
+      <span className="flex-1 truncate text-sm text-sidebar-foreground">
+        {project.name}
+      </span>
+      {project.isOwner && (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="opacity-0 group-hover:opacity-100"
+              />
+            }
+          >
+            <MoreHorizontal className="h-3.5 w-3.5" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="start">
+            <DropdownMenuItem onClick={() => onRename(project)}>
+              <Pencil className="h-4 w-4" />
+              Rename
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDelete(project)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </div>
+  )
 }
 
 interface EmptyStateProps {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
+  icon: React.ComponentType<{ className?: string }>
+  title: string
+  description: string
 }
 
 function EmptyState({ icon: Icon, title, description }: EmptyStateProps) {
@@ -101,5 +194,5 @@ function EmptyState({ icon: Icon, title, description }: EmptyStateProps) {
       </h3>
       <p className="text-xs text-muted-foreground">{description}</p>
     </div>
-  );
+  )
 }

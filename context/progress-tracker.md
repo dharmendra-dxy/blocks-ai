@@ -4,17 +4,16 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Phase 2: Authentication
+- Phase 3: Project Dialogs
 
 ## Current Goal
 
-- Wire Clerk into the app: provider, auth pages, route protection, redirects, and user menu.
+- Build the editor home screen and add project dialogs/sidebar actions (create, rename, delete). No API calls or persistence yet — mock data only.
 
 ## Completed
 
 - Editor navbar (`components/editor/editor-navbar.tsx`) — fixed-height top navbar with sidebar toggle using `PanelLeftOpen`/`PanelLeftClose` icons.
 - Project sidebar (`components/editor/project-sidebar.tsx`) — floating sidebar that slides from left, with `Projects` header, `My Projects`/`Shared` tabs, empty placeholder states, and full-width `New Project` button.
-- Dialog pattern types (`components/editor/dialog-types.ts`) — `DialogProps` and `DialogAction` interfaces ready for future dialog implementations.
 - Editor layout integration (`app/editor/layout.tsx`) — integrated navbar and sidebar with state management.
 - Editor page (`app/editor/page.tsx`) — workspace canvas placeholder.
 - Clerk auth integration — `ClerkProvider` with `dark` theme wrapping root layout, appearance variables mapped to app CSS variables.
@@ -24,6 +23,13 @@ Update this file whenever the current phase, active feature, or implementation s
 - Route protection (`proxy.ts`) — `clerkMiddleware` with `createRouteMatcher`; `/sign-in` and `/sign-up` are public, everything else protected.
 - Home page (`app/page.tsx`) — authenticated users redirect to `/editor`, unauthenticated to `/sign-in`.
 - UserButton added to editor navbar right section for profile/logout.
+- Editor home screen (`app/editor/page.tsx`) — center content with heading, description, and `New Project` button that opens the Create dialog.
+- Project types (`src/types/project.ts`) — `Project`, `ProjectDialogMode`, and `ProjectDialogState` interfaces.
+- `useProjectDialogs` hook (`src/hooks/use-project-dialogs.ts`) — manages dialog state, form state, loading state, and mock project data.
+- Single `ProjectDialog` component (`components/editor/project-dialog.tsx`) — unified dialog handling create, rename, and delete modes with discriminated union props.
+- `ProjectDialogsProvider` (`components/editor/project-dialogs-provider.tsx`) — context provider for sharing dialog state across layout and page.
+- Sidebar project actions — rename/delete dropdown menu for owned projects only; hidden for shared/collaborator projects.
+- Mobile sidebar backdrop scrim with tap-outside-to-close (`md:hidden` breakpoint).
 
 ## In Progress
 
@@ -31,8 +37,8 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Add first functional dialog (e.g., new project dialog)
 - Implement canvas workspace with React Flow
+- Add API calls and persistence for project CRUD
 
 ## Open Questions
 
@@ -45,6 +51,9 @@ Update this file whenever the current phase, active feature, or implementation s
 - Do not modify generated components/ui/* files after shadcn installation.
 - Clerk `dark` theme used as base; appearance variables overridden with app CSS variables.
 - Route protection via `proxy.ts` using `clerkMiddleware` + `createRouteMatcher`.
+- Project dialogs use a context provider (`ProjectDialogsProvider`) to share dialog state between layout, sidebar, and page without prop drilling.
+- Hooks belong in `src/hooks/`, types in `src/types/`.
+- Single unified dialog component with discriminated union props instead of multiple dialog components per action.
 
 ## Session Notes
 
