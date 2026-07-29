@@ -2,104 +2,206 @@
 
 ## Theme
 
-Dark only. No light mode. The visual language is a dark technical workspace — near-black backgrounds, layered surfaces, and vivid accent colors for interactive elements.
+**Light mode only.** Do not implement or design for dark mode.
 
-All colors are defined as CSS custom properties in `globals.css` and mapped to Tailwind tokens via `@theme inline`. Components must use these tokens — no hardcoded hex values or raw Tailwind color classes like `zinc-*`.
+The application follows the default shadcn/ui design system using the design tokens defined in `globals.css`. Components should rely exclusively on semantic Tailwind utilities backed by CSS variables.
 
-| Role             | CSS Variable           | Hex / Value               |
-| ---------------- | ---------------------- | ------------------------- |
-| Page background  | `--bg-base`            | `#080809`                 |
-| Surface          | `--bg-surface`         | `#111114`                 |
-| Elevated surface | `--bg-elevated`        | `#18181c`                 |
-| Subtle surface   | `--bg-subtle`          | `#1e1e23`                 |
-| Default border   | `--border-default`     | `#2a2a30`                 |
-| Subtle border    | `--border-subtle`      | `#3a3a42`                 |
-| Primary text     | `--text-primary`       | `#f0f0f4`                 |
-| Secondary text   | `--text-secondary`     | `#c0c0cc`                 |
-| Muted text       | `--text-muted`         | `#808090`                 |
-| Faint text       | `--text-faint`         | `#505060`                 |
-| Brand accent     | `--accent-primary`     | `#00c8d4` (cyan)          |
-| Brand dim        | `--accent-primary-dim` | `rgba(0, 200, 212, 0.12)` |
-| AI accent        | `--accent-ai`          | `#6457f9` (indigo-purple) |
-| AI text          | `--accent-ai-text`     | `#8b82ff`                 |
-| Error            | `--state-error`        | `#ff4d4f`                 |
-| Success          | `--state-success`      | `#34d399`                 |
-| Warning          | `--state-warning`      | `#fbbf24`                 |
+Use semantic utility classes such as:
 
-Tailwind utility names map to these variables. Use `bg-base`, `bg-surface`, `text-copy-primary`, `text-copy-muted`, `border-surface-border`, `text-brand`, `bg-accent-dim`, etc.
+- `bg-background`
+- `bg-card`
+- `bg-popover`
+- `text-foreground`
+- `text-muted-foreground`
+- `bg-primary`
+- `text-primary-foreground`
+- `bg-secondary`
+- `bg-muted`
+- `bg-accent`
+- `text-accent-foreground`
+- `border-border`
+- `ring-ring`
+- `bg-destructive`
+
+Do **not**:
+
+- Define custom color palettes.
+- Hardcode hex values.
+- Use arbitrary colors (`bg-[#...]`, `text-[#...]`).
+- Use Tailwind colour scales (`zinc-*`, `gray-*`, `slate-*`, etc.) unless absolutely necessary.
+
+All colours must come from the tokens defined in `globals.css`.
+
+---
+
+## Color System
+
+The design system is entirely driven by the CSS variables declared in `globals.css`.
+
+Primary semantic tokens include:
+
+| Purpose | Token |
+|---------|-------|
+| Page background | `background` |
+| Foreground text | `foreground` |
+| Card surface | `card` |
+| Popover | `popover` |
+| Primary actions | `primary` |
+| Secondary surfaces | `secondary` |
+| Muted surfaces | `muted` |
+| Accent states | `accent` |
+| Borders | `border` |
+| Inputs | `input` |
+| Focus rings | `ring` |
+| Destructive actions | `destructive` |
+
+Whenever possible, use semantic utilities instead of referencing colours directly.
+
+---
 
 ## Typography
 
-| Role      | Font       | CSS Variable        |
-| --------- | ---------- | ------------------- |
-| UI text   | Geist Sans | `--font-geist-sans` |
-| Code/mono | Geist Mono | `--font-geist-mono` |
+| Role | Variable |
+|------|----------|
+| Sans | `--font-sans` |
+| Mono | `--font-geist-mono` |
 
-Both fonts are loaded via `next/font/google` and applied as CSS variables on the `<html>` element. The base `body` uses Geist Sans with `antialiased`.
+The application uses the default sans font throughout the UI. Use the mono font only for code snippets, IDs and technical values.
+
+---
 
 ## Border Radius
 
-Radius increases with surface depth — smaller for inner elements, larger for outer containers.
+Border radius comes directly from the global design tokens.
 
-| Context           | Class         |
-| ----------------- | ------------- |
-| Inline / small UI | `rounded-xl`  |
-| Cards / panels    | `rounded-2xl` |
-| Modal / overlay   | `rounded-3xl` |
+Prefer the following semantic sizes:
+
+| Usage | Class |
+|--------|------|
+| Inputs & buttons | `rounded-md` |
+| Cards | `rounded-lg` |
+| Dialogs | `rounded-xl` |
+| Large feature panels | `rounded-2xl` |
+
+Avoid excessive rounding unless it improves usability.
+
+---
 
 ## Canvas
 
-### Node Color Palette
+### Node Style
 
-8 defined color pairs. Each pair specifies a dark node fill and a vivid contrasting text color tuned for readability on the dark canvas. Defined in `types/canvas.ts` as `NODE_COLORS`.
+Canvas nodes should follow the application's light theme.
 
-| Node fill | Text color | Character              |
-| --------- | ---------- | ---------------------- |
-| `#1F1F1F` | `#EDEDED`  | Neutral dark (default) |
-| `#10233D` | `#52A8FF`  | Blue                   |
-| `#2E1938` | `#BF7AF0`  | Purple                 |
-| `#331B00` | `#FF990A`  | Orange                 |
-| `#3C1618` | `#FF6166`  | Red                    |
-| `#3A1726` | `#F75F8F`  | Pink                   |
-| `#0F2E18` | `#62C073`  | Green                  |
-| `#062822` | `#0AC7B4`  | Teal                   |
+- Background: `bg-card`
+- Border: `border-border`
+- Text: `text-foreground`
+- Selected state: use `ring-ring`
+- Hover state: use `bg-accent`
 
-Default node color: `#1F1F1F` with `#EDEDED` text.
+Avoid colourful node backgrounds unless they communicate a specific meaning.
 
 ### Edge Style
 
-Smooth-step path with an arrow marker. Default edge color: `#f8fafc`. Stroke width is thin — edges are visually secondary to nodes.
+- Thin stroke
+- Neutral border colour
+- Smooth-step edges
+- Arrow marker enabled
+
+Edges should remain visually secondary to nodes.
 
 ### Node Shapes
 
-6 supported shapes, defined in `types/canvas.ts` as `NODE_SHAPES`. Complex shapes (diamond, hexagon, cylinder) are rendered as inline SVGs rather than CSS borders.
+Supported node shapes:
 
-- `rectangle` — default general-purpose node
-- `diamond` — decision / gateway
-- `circle` — event / endpoint
-- `pill` — service / process
-- `cylinder` — database / storage
-- `hexagon` — external system / boundary
+- Rectangle
+- Diamond
+- Circle
+- Pill
+- Cylinder
+- Hexagon
+
+Complex shapes should continue to be rendered using SVG.
 
 ### Connection Handles
 
-Small white circular handles, hidden by default, revealed on node hover. Appear at all four sides of a node.
+Small circular handles using the application's primary colour.
+
+Visible on hover.
 
 ### Canvas Background
 
-React Flow `<Background>` component. Canvas sits on the base background color.
+Use the application background (`bg-background`) with the default React Flow background grid.
+
+---
 
 ## Component Library
 
-shadcn/ui on top of Tailwind. No custom design system. Components live in `components/ui/`. Use the `shadcn` CLI to add new components rather than writing them from scratch.
+Use **shadcn/ui** components whenever possible.
+
+Components should:
+
+- Use semantic Tailwind classes.
+- Respect the global CSS variables.
+- Avoid introducing custom component styling unless required by functionality.
+
+If a component is missing, add it through the shadcn CLI before creating a custom implementation.
+
+---
 
 ## Layout Patterns
 
-- Editor workspace: full-viewport layout — floating sidebar overlay on the left, center canvas, slide-over AI sidebar on the right.
-- Sidebars: floating overlay with dark semi-transparent background and subtle border.
-- Modals and dialogs: centered overlay, `rounded-3xl`, dark background with backdrop blur.
-- Navbar: top bar with dark background and bottom border.
+### Workspace
+
+- Clean light background
+- Floating panels should use `bg-card`
+- Borders use `border-border`
+- Comfortable whitespace over heavy visual separation
+
+### Sidebar
+
+- `bg-sidebar`
+- `text-sidebar-foreground`
+- `border-sidebar-border`
+
+Use sidebar semantic tokens instead of standard card colours.
+
+### Dialogs
+
+- `bg-card`
+- `border-border`
+- `rounded-xl`
+- Subtle shadow
+
+### Navbar
+
+- `bg-background`
+- Bottom border using `border-border`
+- Minimal elevation
+
+---
 
 ## Icons
 
-Lucide React. Stroke-based icons only — no filled variants. Icon sizes: `h-4 w-4` for inline, `h-5 w-5` for buttons, `h-8 w-8` for feature icons in empty states.
+Use **Lucide React** exclusively.
+
+Recommended sizes:
+
+- Inline: `h-4 w-4`
+- Buttons: `h-5 w-5`
+- Empty states: `h-8 w-8`
+
+Prefer outline icons over filled variants.
+
+---
+
+## Design Principles
+
+- Light-first interface.
+- Clean, spacious layouts.
+- Semantic colours only.
+- Consistent spacing.
+- Minimal visual noise.
+- Accessible contrast.
+- Reuse shadcn components whenever possible.
+- Follow the tokens defined in `globals.css` rather than introducing new design variables.
